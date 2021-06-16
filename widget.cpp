@@ -76,14 +76,15 @@ Widget::~Widget()
     delete b;
 }
 
-void Widget::comboBoxChanged( int index)
+
+void Widget::comboBoxChanged( int Type)
 {
-    switch (index)
+    switch (Type)
     {
-    case 0:
+    case GroupByFolder:
         type=Type::GroupByFolder;
         break;
-    case 1:
+    case GroupByType:
         type=Type::GroupByType;
         break;
     default:

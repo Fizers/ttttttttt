@@ -31,7 +31,7 @@ public:
 
 private slots:
     void on_treeView_doubleClicked(const QModelIndex &index);
-    void comboBoxChanged(int index);
+    void comboBoxChanged(int Type);
     void on_pushButton_clicked();
 
 private:
