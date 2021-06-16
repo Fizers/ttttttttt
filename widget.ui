@@ -67,12 +67,12 @@
    </property>
    <item>
     <property name="text">
-     <string>1</string>
+     <string>folder</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>2</string>
+     <string>type</string>
     </property>
    </item>
   </widget>

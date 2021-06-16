@@ -2,36 +2,38 @@
 #include "ui_widget.h"
 #include <QDir>
 #include <QFileInfo>
+#include "GroupFolder.h"
+#include "GroupType.h"
 
-Widget::Widget(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::Widget)
+Widget::Widget(QWidget *parent):
+    QWidget(parent),
+    ui(new Ui::Widget)
 {
     ui->setupUi(this);
     path = new QFileSystemModel(this);
     path->setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir:: Hidden);
     path->setRootPath("");
+
+    type=Type::GroupByFolder;
+
+    fmodel = std::make_shared<Model>();
+    b=new Browser(new GroupFolder);
+
     ui->treeView->setModel(path);
+    ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    ui->tableView->setModel(fmodel.get());
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)),this,
             SLOT(on_treeView_doubleClicked(QModelIndex)));
 
-    table = new QStandardItemModel( 5,3,this );
-    ui->tableView->setModel(table);
-    QModelIndex inde;
-    for(int row=0; row< table->rowCount();++row)
-    {
-        for(int col=0; col< table->columnCount();++col)
-        {
-            inde = table->index(row, col);
-            table->setData(inde,0);
-        }
-    }
+    connect(ui->comboBox,QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::comboBoxChanged);
+
+    connect(ui->pushButton, SIGNAL(released()),this, SLOT (on_pushButton_clicked()));
+
 }
 
-Widget::~Widget()
-{
-    delete ui;
-}
 
 
 void Widget::on_treeView_doubleClicked(const QModelIndex &index)
@@ -45,5 +47,49 @@ void Widget::on_treeView_doubleClicked(const QModelIndex &index)
 
 void Widget::on_pushButton_clicked()
 {
+   QString dir=ui->textEdit->toPlainText();
+   if (dir.isEmpty())
+       return;
+   switch (type)
+   {
+     case Type::GroupByFolder:
+     b->setStrategy(new GroupFolder);
+     break;
+
+     case Type::GroupByType:
+     b->setStrategy(new GroupType);
+     break;
+
+     default:
+       b->setStrategy(new GroupFolder);
+       break;
+   }
+   inf=b->browser(dir);//на след строчке установить данные в модель
+   fmodel->setModel(inf);
+
+}
+
+
+Widget::~Widget()
+{
+    delete ui;
+    delete path;
+    delete b;
+}
+
+void Widget::comboBoxChanged( int index)
+{
+    switch (index)
+    {
+    case 0:
+        type=Type::GroupByFolder;
+        break;
+    case 1:
+        type=Type::GroupByType;
+        break;
+    default:
+        type=Type::GroupByFolder;
+        break;
+    }
 
 }

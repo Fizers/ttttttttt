@@ -6,30 +6,42 @@
 #include <QFileSystemModel>
 #include <QFileInfo>
 #include <QStandardItemModel>
-QT_BEGIN_NAMESPACE
+#include <Browser.h>
+#include "ModelInform.h"
+#include "Model.h"
+
+
 namespace Ui
 {
 class Widget;
 }
-QT_END_NAMESPACE
 
 class Widget : public QWidget
 {
     Q_OBJECT
 
 public:
+    enum Type
+    {
+       GroupByFolder,
+       GroupByType
+    };
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
 private slots:
     void on_treeView_doubleClicked(const QModelIndex &index);
-
+    void comboBoxChanged(int index);
     void on_pushButton_clicked();
 
 private:
     Ui::Widget *ui;
     QFileSystemModel *path;
-    QStandardItemModel *table;
+    Type type;
+    Browser *b;
+    IBrowser *btype;
+    QList<AllInf> inf;
+    std::shared_ptr<Model> fmodel;
 
 };
 #endif // WIDGET_H
