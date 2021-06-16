@@ -39,7 +39,6 @@ Widget::Widget(QWidget *parent):
 void Widget::on_treeView_doubleClicked(const QModelIndex &index)
 {
     ui->textEdit->clear();
-    QTreeView* treeView = (QTreeView*)sender();
     QFileInfo mydir = path->fileInfo(index);
     auto pp = mydir.absoluteFilePath();
     ui->textEdit->insertPlainText(pp);
