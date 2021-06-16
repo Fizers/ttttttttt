@@ -74,18 +74,38 @@ void GroupFolder::PrintFolderAllInf(const QMap<QString, qint64>& FolderType, con
     }
 }
 
-void GroupFolder::browser(const QString& path)
-{QTextStream cout(stdout);
+QList<AllInf> GroupFolder::FormInf(const QMap<QString, qint64> &FolderType, const QList<QPair<double, QString>>  &FolderPercent) const
+{
+    QList<AllInf> inform;
+    for (auto x : FolderPercent)
+    {
+        if (x.first < 0)
+        {
+            inform.push_back(AllInf(x.second, QString::number(FolderType.value(x.second)), QString("< 0.01 %")));
+        }
+        else
+        {
+            inform.push_back(AllInf(x.second, QString::number(FolderType.value(x.second)), QString::number(x.first, 'f', 2).append(" %")));
+        }
+    }
+    return inform;
+}
+
+QList<AllInf> GroupFolder::browser(const QString& path)
+{
+    QTextStream cout(stdout);
     QFileInfo folder(path);
     if (!folder.exists() && !folder.isReadable())
     {
         cout << "Error!Luke I'm not your papka(" << "\n";
-        return;
+        exit(-1);
     }
     auto FolderList = getFolderSize(path);
     auto AllSize = Total::GiveSize(FolderList);
     auto FolderPercent = getPercentFolder(AllSize, FolderList);
     auto sortFolderPercent = sortPercent(FolderPercent);
-    PrintFolderAllInf(FolderList, sortFolderPercent);
+    //PrintFolderAllInf(FolderList, sortFolderPercent);
+    auto inform=FormInf(FolderList,sortFolderPercent);
+    return inform;
 }
 

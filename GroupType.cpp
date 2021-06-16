@@ -78,24 +78,38 @@ void GroupType::PrintTypeAllInf(const QMap<QString, qint64>& TypeList, const QLi
     cout.reset();
 }
 
+QList<AllInf> GroupType::FormInf(const QMap<QString, qint64> &TypeList, const QList<QPair<double, QString> > &TypePercant)
+{
+    QList<AllInf> inform;
+    for (auto x : TypePercant) {
+        if (x.first < 0) {
+            inform.push_back(AllInf(x.second, QString::number(TypeList.value(x.second)), QString("< 0.01 %")));
+        } else {
+        inform.push_back(AllInf("*." + x.second, QString::number(TypeList.value(x.second)), QString::number(x.first, 'f', 2).append(" %")));
+        }
+    }
+    return inform;
+}
 
-void GroupType::browser(const QString& path)
+QList<AllInf> GroupType::browser(const QString& path)
 {QTextStream cout(stdout);
     QDir folder(path);
     if (!folder.exists() && !folder.isReadable()) {
         cout << "Error!" << "\n";
-        return;
+        return QList<AllInf> ();
     }
     if (folder.isEmpty())
     {
         cout << "Folder is empty!" << "\n";
-        return;
+        return QList<AllInf> ();
     }
     QMap<QString, qint64> TypeList;
     getTypeSize(path, TypeList);
     auto AllSize = Total::GiveSize(TypeList);
     auto TypePercant = getTypePercent(AllSize, TypeList);
     auto sortTypePercant = sortPercent(TypePercant);
-    PrintTypeAllInf(TypeList, sortTypePercant);
+    //PrintTypeAllInf(TypeList, sortTypePercant);
+    auto inform=FormInf(TypeList,sortTypePercant);
+    return inform;
 }
 

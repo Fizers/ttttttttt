@@ -5,11 +5,12 @@
                       // является ли он каталогом или символической ссылкой и т.д.
 #include <QTextStream>
 #include <QDebug>
+#include "ModelInform.h"
 
 class IBrowser
 {
 public:
-    virtual void browser(const QString& path) = 0;
+    virtual QList<AllInf> browser(const QString& path) = 0;
     virtual ~IBrowser() {}
 };
 
@@ -18,12 +19,24 @@ class Browser
 private:
     IBrowser *b;
 public:
+    Browser ()=default;
     explicit Browser(IBrowser* l) : b(l) {}
-    void browser(const QString& path)
+    QList<AllInf> browser(const QString& path)
     {
         b->browser(path);
     }
-    void setStrategy(IBrowser* strategy) { b = strategy; }
+    void setStrategy(IBrowser* strategy)
+    {
+        if (b)
+            delete b;
+        b = strategy;
+    }
+    ~Browser()
+    {
+        if (b)
+            delete b;
+    }
+
 };
 
 #endif // BROWSER_H
