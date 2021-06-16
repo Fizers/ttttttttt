@@ -23,7 +23,10 @@ public:
     explicit Browser(IBrowser* l) : b(l) {}
     QList<AllInf> browser(const QString& path)
     {
-        b->browser(path);
+        if (b)
+            return b->browser(path);
+        else
+            return QList<AllInf>();
     }
     void setStrategy(IBrowser* strategy)
     {
