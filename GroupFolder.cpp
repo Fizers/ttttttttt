@@ -7,7 +7,7 @@ qint64 getDirSize(const QString& path)
 {
     qint64 AllSize = 0;
     QDir myDir(path);
-    for (const auto s : myDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot , QDir::Name | QDir::Type))
+    for (const auto& s : myDir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot , QDir::Name | QDir::Type))
         AllSize += s.size();
     return AllSize;
 }
@@ -21,7 +21,7 @@ QMap<QString, qint64> GroupFolder::getFolderSize(const QString& path) const
     auto thisDirPath = folder.absoluteFilePath();
     FolderList.insert(thisDirPath, getDirSize(thisDirPath));
 
-    for (auto x : QDir(path).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden, QDir::Name | QDir::Type))
+    for (auto& x : QDir(path).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden, QDir::Name | QDir::Type))
     {
         auto TotalPath = x.absoluteFilePath();
         FolderList.insert(TotalPath, Total::getAllSize(TotalPath));
@@ -59,39 +59,25 @@ QList<QPair<double, QString>> sortPercent(const QMap<QString, double>& FolderPer
     return sortList;
 }
 
-
-void GroupFolder::PrintFolderAllInf(const QMap<QString, qint64>& FolderType, const QList<QPair<double, QString> >& FolderPercent) const
-{QTextStream cout(stdout);
-    for (auto x : FolderPercent)
-    {
-            cout << qSetFieldWidth(28) << Qt::left << x.second << qSetFieldWidth(10)  << FolderType.value(x.second) / 1024.0
-                      << qSetFieldWidth(10)<< " KB";
-            if (x.first < 0 || x.first == 0) {
-               cout << qSetFieldWidth(8) << "< 0.01 %\n";
-            }
-            else
-                cout << qSetFieldWidth(8) << QString::number(x.first, 'f', 2).append(" %") << "\n";
-    }
-}
-
-QList<AllInf> GroupFolder::FormInf(const QMap<QString, qint64> &FolderType, const QList<QPair<double, QString>>  &FolderPercent) const
+QList<AllInf> GroupFolder::FormInf(const QMap<QString, qint64> &FolderType, const QList<QPair<double, QString>>& FolderPercent) const
 {
     QList<AllInf> inform;
-    for (auto x : FolderPercent)
+    auto AllSize = Total::GiveSize(FolderType);
+    for (auto& x : FolderPercent)
     {
         if (x.first < 0)
         {
-            inform.push_back(AllInf(x.second, QString::number(FolderType.value(x.second)), QString("< 0.01 %")));
+            inform.push_back(AllInf(x.second, QString::number(FolderType.value(x.second)), QString("< 0.01 %"), (qreal)FolderType.value(x.second)/ AllSize));
         }
         else
         {
-            inform.push_back(AllInf(x.second, QString::number(FolderType.value(x.second)), QString::number(x.first, 'f', 2).append(" %")));
+            inform.push_back(AllInf(x.second, QString::number(FolderType.value(x.second)), QString::number(x.first, 'f', 2).append(" %"),(qreal)FolderType.value(x.second)/ AllSize));
         }
     }
     return inform;
 }
 
-QList<AllInf> GroupFolder::browser(const QString& path)
+void GroupFolder::browser(const QString& path)
 {
     QTextStream cout(stdout);
     QFileInfo folder(path);
@@ -104,8 +90,27 @@ QList<AllInf> GroupFolder::browser(const QString& path)
     auto AllSize = Total::GiveSize(FolderList);
     auto FolderPercent = getPercentFolder(AllSize, FolderList);
     auto sortFolderPercent = sortPercent(FolderPercent);
-    //PrintFolderAllInf(FolderList, sortFolderPercent);
     auto inform=FormInf(FolderList,sortFolderPercent);
-    return inform;
+    OnFinish( QList<AllInf> (inform));;
+
+    //PrintFolderAllInf(FolderList, sortFolderPercent);
 }
+
+
+
+
+//void GroupFolder::PrintFolderAllInf(const QMap<QString, qint64>& FolderType, const QList<QPair<double, QString> >& FolderPercent) const
+//{QTextStream cout(stdout);
+//    for (auto x : FolderPercent)
+//    {
+//            cout << qSetFieldWidth(28) << Qt::left << x.second << qSetFieldWidth(10)  << FolderType.value(x.second) / 1024.0
+//                      << qSetFieldWidth(10)<< " KB";
+//            if (x.first < 0 || x.first == 0) {
+//               cout << qSetFieldWidth(8) << "< 0.01 %\n";
+//            }
+//            else
+//                cout << qSetFieldWidth(8) << QString::number(x.first, 'f', 2).append(" %") << "\n";
+//    }
+//}
+
 
