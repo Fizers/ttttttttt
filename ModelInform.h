@@ -7,7 +7,9 @@ struct AllInf
     QString path_;
     QString size_;
     QString percent_;
-    AllInf(QString path, QString size, QString percent):path_(path),size_(size),percent_(percent)
+    qreal ratio_;
+    AllInf(const QString path,const QString size, const QString percent, qreal ratio)
+        :path_(path),size_(size),percent_(percent), ratio_(ratio)
     {}
 };
 
