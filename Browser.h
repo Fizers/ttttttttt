@@ -6,12 +6,25 @@
 #include <QTextStream>
 #include <QDebug>
 #include "ModelInform.h"
+#include "BrowserModel.h"
 
 class IBrowser
 {
+private:
+     BrowserModel *bm;
 public:
-    virtual QList<AllInf> browser(const QString& path) = 0;
+    virtual void browser(const QString& path) = 0;
     virtual ~IBrowser() {}
+    void Attach(BrowserModel* abm)
+    {
+        if (abm)
+            bm = abm;
+    }
+
+    void OnFinish(const QList<AllInf>& oninf) const
+    {
+        bm->UpdateBrowser(oninf);
+    }
 };
 
 class Browser
@@ -21,12 +34,9 @@ private:
 public:
     Browser ()=default;
     explicit Browser(IBrowser* l) : b(l) {}
-    QList<AllInf> browser(const QString& path)
+    void browser(const QString& path)
     {
-        if (b)
-            return b->browser(path);
-        else
-            return QList<AllInf>();
+        b->browser(path);
     }
     void setStrategy(IBrowser* strategy)
     {
