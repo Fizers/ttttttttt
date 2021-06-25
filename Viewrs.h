@@ -11,7 +11,7 @@ public:
     explicit TableViewr(QLayout* l);
     ~TableViewr();
 
-    void UpdateBrowser(  QList<AllInf>& data) const;
+    void UpdateBrowser(  QList<AllInf> inf) const;
 };
 
 class PieViewr : public Charts
@@ -19,7 +19,7 @@ class PieViewr : public Charts
 public:
     explicit PieViewr(QLayout* l);
     PieViewr() = default;
-    QAbstractSeries* AddInf(const QList<AllInf> &data) const;
+    QAbstractSeries* AddInf(const QList<AllInf> &inform) const;
 };
 
 class BarViewr : public Charts
@@ -27,7 +27,7 @@ class BarViewr : public Charts
 public:
     explicit BarViewr(QLayout* l);
     BarViewr() = default;
-    QAbstractSeries* AddInf(const QList<AllInf>& data) const;
+    QAbstractSeries* AddInf(const QList<AllInf>& inform) const;
 };
 
 

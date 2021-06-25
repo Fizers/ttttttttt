@@ -52,9 +52,9 @@ void Charts::AddLayout(QLayout *l)
     l->addWidget(ChartView);
 }
 
-void Charts::UpdateBrowser( QList<AllInf>& inform) const
+void Charts::UpdateBrowser( QList<AllInf> inf) const
 {
-    setChart(inform);
+    setChart(inf);
 }
 
 

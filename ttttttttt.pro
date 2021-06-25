@@ -9,9 +9,11 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Charts.cpp \
     GroupFolder.cpp \
     GroupType.cpp \
     Model.cpp \
+    Vierws.cpp \
     main.cpp \
     widget.cpp
 
@@ -19,12 +21,12 @@ HEADERS += \
     Browser.h \
     BrowserModel.h \
     Charts.h \
-    Grafiki.h \
     GroupFolder.h \
     GroupType.h \
     Model.h \
     ModelInform.h \
     Size.h \
+    Viewrs.h \
     widget.h
 
 FORMS += \

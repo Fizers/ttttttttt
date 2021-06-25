@@ -32,7 +32,7 @@ public:
 
     void setChart( QList<AllInf>& inform) const;
     void AddLayout(QLayout* l);
-    void UpdateBrowser( QList<AllInf>& inform) const;
+    void UpdateBrowser( QList<AllInf> inf) const;
     void SetInf( QList<AllInf>& inform) const;
     void RemoveSeries(QChart* s) const;
     void AddSeries(QAbstractSeries* s) const;

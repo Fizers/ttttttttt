@@ -14,9 +14,9 @@ TableViewr::~TableViewr()
     delete tableview;
 }
 
-void TableViewr::UpdateBrowser(QList<AllInf>& inform) const
+void TableViewr::UpdateBrowser(QList<AllInf> inf) const
 {
-    tablemodel->setModel(inform);
+    tablemodel->setModel(inf);
 }
 
 

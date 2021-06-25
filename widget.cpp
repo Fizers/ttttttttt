@@ -4,10 +4,15 @@
 #include <QFileInfo>
 #include "GroupFolder.h"
 #include "GroupType.h"
+#include "Viewrs.h"
+#include "BrowserModel.h"
 
 Widget::Widget(QWidget *parent):
     QWidget(parent),
-    ui(new Ui::Widget)
+    ui(new Ui::Widget),
+    FolderGrouping(new GroupFolder()),
+    TypesGrouping(new GroupType()),
+    groupingStrategy(FolderGrouping)
 {
     ui->setupUi(this);
     path = new QFileSystemModel(this);
@@ -15,24 +20,27 @@ Widget::Widget(QWidget *parent):
     path->setRootPath("");
 
     type=Type::GroupByFolder;
+    typeview=TypeViewrs::tablevie;
 
-    fmodel = std::make_shared<Model>();
-    b=new Browser(new GroupFolder);
+    table = new TableViewr(ui->stackedWidget->layout());
+    pie = new PieViewr(ui->stackedWidget->layout());
+    bar = new BarViewr(ui->stackedWidget->layout());
+    ModelView = table;
+    groupingStrategy->Attach(ModelView);
 
     ui->treeView->setModel(path);
     ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
-    ui->tableView->setModel(fmodel.get());
-    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)),this,
             SLOT(on_treeView_doubleClicked(QModelIndex)));
 
     connect(ui->comboBox,QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::comboBoxChanged);
+    connect(ui->erte,QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::comboBoxChanged2);
 
     connect(ui->pushButton, SIGNAL(released()),this, SLOT (on_pushButton_clicked()));
 
 }
+
 
 
 
@@ -51,29 +59,62 @@ void Widget::on_pushButton_clicked()
        return;
    switch (type)
    {
-     case Type::GroupByFolder:
-     b->setStrategy(new GroupFolder);
+     case GroupByFolder:
+     groupingStrategy= FolderGrouping;
      break;
 
-     case Type::GroupByType:
-     b->setStrategy(new GroupType);
+     case GroupByType:
+     groupingStrategy= TypesGrouping;
      break;
 
      default:
-       b->setStrategy(new GroupFolder);
+       groupingStrategy= FolderGrouping;
        break;
    }
-   inf=b->browser(dir);//на след строчке установить данные в модель
-   fmodel->setModel(inf);
 
+   groupingStrategy->Attach(ModelView);
+   groupingStrategy->browser(dir);
+   switch (typeview)
+   {
+     case tablevie:
+     ModelView = table;
+     break;
+
+     case pievie:
+     ModelView = pie;
+     break;
+
+     case barvie:
+     ModelView = bar;
+     break;
+
+     default:
+       ModelView = table;
+       break;
+   }
+   groupingStrategy->Attach(ModelView);
+   groupingStrategy->browser(dir);
+   ui->stackedWidget->setCurrentIndex(typeview);
 }
+
+
+
+
+
+
 
 
 Widget::~Widget()
 {
     delete ui;
     delete path;
-    delete b;
+
+    delete table;
+    delete pie;
+    delete bar;
+
+    delete FolderGrouping;
+    delete TypesGrouping;
 }
 
 
@@ -92,4 +133,23 @@ void Widget::comboBoxChanged( int Type)
         break;
     }
 
+}
+
+void Widget::comboBoxChanged2( int TypeViewrs)
+{
+    switch (TypeViewrs)
+    {
+    case tablevie:
+        typeview=TypeViewrs::tablevie;
+        break;
+    case pievie:
+        typeview=TypeViewrs::pievie;
+        break;
+    case barvie:
+        typeview=TypeViewrs::barvie;
+        break;
+    default:
+        typeview=TypeViewrs::tablevie;
+        break;
+    }
 }
